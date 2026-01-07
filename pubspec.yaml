@@ -1,0 +1,57 @@
+name: container_app
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+packages:
+  - 'packages/shared_core'
+  - 'packages/models_package'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  provider: ^6.1.5+1
+  flutter_bloc: ^9.1.1
+  url_launcher: ^6.3.0
+  skeletonizer: ^2.1.0+1
+  flutter_secure_storage: ^9.2.2
+  equatable: ^2.0.7
+  erp_app:
+    path: ../erp_app
+  #  models_package:
+  #    path: ../packages/models_package
+  resources_package:
+    path: ../packages/resources_package
+  services_package:
+    path: ../packages/services_package
+  #  ui_components_package:
+  #    path: ../packages/ui_components_package
+  login_module:
+    path: ../modules/login_module
+  micro_app_core:
+    path: ../micro_app_core
+  micro_app_commons:
+    path: ../micro_app_commons
+  cupertino_icons: ^1.0.8
+  flutter_html: ^3.0.0
+
+  flutter_redux: ^0.10.0
+  get_it: ^9.2.0
+  redux: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+dependency_overrides:
+  micro_app_core:
+    path: ../micro_app_core
