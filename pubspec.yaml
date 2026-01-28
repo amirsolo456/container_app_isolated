@@ -24,14 +24,10 @@ dependencies:
   equatable: ^2.0.7
   erp_app:
     path: ../erp_app
-  #  models_package:
-  #    path: ../packages/models_package
   resources_package:
     path: ../packages/resources_package
   services_package:
     path: ../packages/services_package
-  #  ui_components_package:
-  #    path: ../packages/ui_components_package
   login_module:
     path: ../modules/login_module
   micro_app_core:
@@ -40,7 +36,6 @@ dependencies:
     path: ../micro_app_commons
   cupertino_icons: ^1.0.8
   flutter_html: ^3.0.0
-
   flutter_redux: ^0.10.0
   get_it: ^9.2.0
   redux: any
