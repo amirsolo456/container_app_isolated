@@ -16,6 +16,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  firebase_core: ^4.2.1
+  cloud_firestore: 6.1.0
+  firebase_messaging: ^16.0.4
   provider: ^6.1.5+1
   flutter_bloc: ^9.1.1
   url_launcher: ^6.3.0
@@ -47,6 +50,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-dependency_overrides:
-  micro_app_core:
-    path: ../micro_app_core
+#dependency_overrides:
+#  micro_app_core:
+#    path: ../micro_app_core

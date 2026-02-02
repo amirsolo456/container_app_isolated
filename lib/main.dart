@@ -4,11 +4,12 @@ import 'package:erp_app/feature/auth/menu/bloc/menu_bloc.dart';
 import 'package:erp_app/feature/auth/menu/bloc/menu_event.dart';
 import 'package:erp_app/feature/com/person/presentation/blocs/person_bloc/person_list_bloc.dart';
 import 'package:erp_app/index.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_module/micro_app/login_module_resolver.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 
-import 'package:erp_app/core/network/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/features/launcher/presentation/bloc/base_bloc/launcher_resolver.dart';
 import 'package:micro_app_commons/features/not_found/presentation/bloc/base_bloc/not_found_resolver.dart';
@@ -16,8 +17,9 @@ import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/pop
 import 'package:micro_app_core/index.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:resources_package/Resources/Theme/theme_manager.dart';
+import 'package:resources_package/Resources/Theme/theme_manager.dart' as res;
 import 'package:services_package/com/person/person_service.dart';
+import 'package:services_package/storage/domain/usecases/storage_service.dart';
 
 import 'content_wrapper.dart';
 import 'micro_base_app/bloc/base_bloc/main_resolver.dart';
@@ -27,22 +29,35 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   try {
-    final erpResolver = ErpResolver();
-    final launcherResolver = LauncherResolver();
-    final loginModuleResolver = LoginModuleResolver();
-    final notFoundResolver = NotFoundResolver();
-    final popupResolver = PopupResolver();
-
-    sl.registerSingleton<ErpResolver>(erpResolver);
-    sl.registerSingleton<LauncherResolver>(launcherResolver);
-    sl.registerSingleton<LoginModuleResolver>(loginModuleResolver);
-    sl.registerSingleton<NotFoundResolver>(notFoundResolver);
-    sl.registerSingleton<PopupResolver>(popupResolver);
-    sl.registerSingleton<MainResolver>(MainResolver());
     await Future.wait(<Future<void>>[
       InjectionContainer.init(),
-      ThemeManager.init(),
+      res.AppTheme.init(),
     ]);
+    sl.registerSingleton<ErpResolver>(ErpResolver());
+    sl.registerSingleton<LauncherResolver>(LauncherResolver());
+    sl.registerSingleton<LoginModuleResolver>(LoginModuleResolver());
+    sl.registerSingleton<NotFoundResolver>(NotFoundResolver());
+    sl.registerSingleton<PopupResolver>(PopupResolver());
+    sl.registerSingleton<MainResolver>(MainResolver());
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyDaFoQ1BufZNuUKKYrVfnoAPjVytggLeJY',
+        appId: '1:511210742680:android:a754014ad3e3daefab81ed',
+        messagingSenderId: '511210742680',
+        projectId: 'aryanerp-e996e',
+        databaseURL: 'https://aryanerp-e996e-default-rtdb.firebaseio.com',
+        storageBucket: 'aryanerp-e996e.firebasestorage.app',
+        androidClientId:
+            '511210742680-xxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com',
+      ),
+    );
+
+    String? token = await FirebaseMessaging.instance.getToken();
+    if(token != null){
+      await sl<StorageService>().saveDeviceToken(token);
+    }
+
+
   } catch (e, stackTrace) {
     debugPrintStack(stackTrace: stackTrace);
   }
@@ -92,7 +107,7 @@ class _AppViewScreenState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
     final AppNotifier notifier = sl<AppNotifier>();
-    final ThemeManager themeConfig = context.select(
+    final res.AppTheme themeConfig = context.select(
       (AppNotifier n) => n.themeConfig,
     );
 
@@ -103,14 +118,13 @@ class _AppViewScreenState extends State<AppView> {
       debugShowCheckedModeBanner: false,
       color: Colors.white,
       // Localization
-      supportedLocales: const <Locale>[Locale('fa'), Locale('en')],
+      supportedLocales: const [Locale('fa'), Locale('en')],
       locale: themeConfig.localMode,
-      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
       localeResolutionCallback:
           (Locale? locale, Iterable<Locale> supportedLocales) {
             if (locale == null) return supportedLocales.first;
@@ -121,7 +135,7 @@ class _AppViewScreenState extends State<AppView> {
             );
           },
 
-      themeMode: ThemeManager.themeMode,
+      themeMode: res.AppTheme().themeMode,
       theme: _buildTheme(themeConfig.primaryColor, Brightness.light),
       darkTheme: _buildTheme(themeConfig.primaryColor, Brightness.dark),
     );
@@ -152,13 +166,8 @@ void registerMicroApps() {
 
 ThemeData _buildTheme(Color seedColor, Brightness brightness) {
   final bool isDark = brightness == Brightness.dark;
-  return ThemeData(
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: seedColor,
-      brightness: brightness,
-    ),
-    useMaterial3: true,
-    fontFamily: 'Vazirani',
-    scaffoldBackgroundColor: isDark ? Colors.grey[900] : Colors.white,
+  return res.AppTheme.build(
+    seedColor,
+    isDark ? Brightness.dark : Brightness.light,
   );
 }

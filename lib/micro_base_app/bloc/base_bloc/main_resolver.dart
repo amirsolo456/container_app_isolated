@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:micro_app_core/index.dart';
 
 
-import 'package:micro_app_core/utils/models/core_dto.dart';
 import '../../../main.dart';
 import 'main_events.dart';
 
