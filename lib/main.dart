@@ -34,6 +34,7 @@ void main() async {
       res.AppTheme.init(),
     ]);
     sl.registerSingleton<ErpResolver>(ErpResolver());
+    sl.registerSingleton<ErpFormGeneratorResolver>(ErpFormGeneratorResolver());
     sl.registerSingleton<LauncherResolver>(LauncherResolver());
     sl.registerSingleton<LoginModuleResolver>(LoginModuleResolver());
     sl.registerSingleton<NotFoundResolver>(NotFoundResolver());
