@@ -37,6 +37,8 @@ dependencies:
     path: ../micro_app_core
   micro_app_commons:
     path: ../micro_app_commons
+  ui_components_package:
+    path: ../packages/ui_components_package
   cupertino_icons: ^1.0.8
   flutter_html: ^3.0.0
   flutter_redux: ^0.10.0
@@ -44,6 +46,7 @@ dependencies:
   redux: any
   toastification: ^3.0.3
   
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
