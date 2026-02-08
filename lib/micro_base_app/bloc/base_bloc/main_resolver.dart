@@ -1,28 +1,28 @@
 // ignore_for_file: implementation_imports, library_prefixes
 
+import 'package:erp_app/core/network/injection_container.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:micro_app_core/index.dart';
-
+import 'package:services_package/storage/domain/usecases/storage_service.dart';
 
 import '../../../main.dart';
 import 'main_events.dart';
 
 import 'main_inject.dart';
 
-class MainResolver
-    extends  MicroApp<ContainerCoreModel, ContainerAppsCoreEnum> {
+class MainResolver extends MicroApp<ContainerCoreModel, ContainerAppsCoreEnum> {
   final Map<ContainerAppsCoreEnum, MicroAppAction> callbacks;
 
   MainResolver()
-      : callbacks = {
-    ContainerAppsCoreEnum.containerLoadLogin: () {},
-    ContainerAppsCoreEnum.containerLoadErp: () {},
-    ContainerAppsCoreEnum.containerLoadApp: () {},
-    ContainerAppsCoreEnum.containerLoadSplash: () {},
-    ContainerAppsCoreEnum.containerWidthLogin: () {},
-  },
-        super(
+    : callbacks = {
+        ContainerAppsCoreEnum.containerLoadLogin: () {},
+        ContainerAppsCoreEnum.containerLoadErp: () {},
+        ContainerAppsCoreEnum.containerLoadApp: () {},
+        ContainerAppsCoreEnum.containerLoadSplash: () {},
+        ContainerAppsCoreEnum.containerWidthLogin: () {},
+      },
+      super(
         ContainerCoreModel(
           customFunctions: {
             ContainerAppsCoreEnum.containerLoadLogin: () {},
@@ -33,7 +33,6 @@ class MainResolver
           },
         ),
       );
-
 
   @override
   String get microAppName => initData.name.toString();
@@ -46,9 +45,8 @@ class MainResolver
 
   @override
   void initEventListeners() {
-    CustomEventBus.on<MainAppSignOutEvents>((event) {
-      // we can use events to navigate as well.
-      // Routing.pushNamed<UserLoggedOutEvent>(Routes.SignIn);
+    CustomEventBus.on<MainAppSignOutEvents>((event) async {
+      await sl<StorageService>().removeToken();
     });
     // CustomEventBus.on<UserLoggedInEvent>((event) {
     //   Routing.pushNamed(Routes.purchases);

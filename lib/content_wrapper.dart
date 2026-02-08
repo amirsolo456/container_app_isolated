@@ -11,8 +11,6 @@ import 'package:micro_app_core/index.dart';
 import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
 import 'package:toastification/toastification.dart';
-
-
 import 'package:ui_components_package/index.dart';
 
 typedef WidgetBuilderArgs = Widget Function(BuildContext context, Object? args);
@@ -38,23 +36,22 @@ class ContentWrapper extends StatefulWidget with BaseApp {
 
   // return the same list (same instances) always
   @override
-  List<MicroApp> get microApps =>
-      <MicroApp>[
-        _erpResolver,
-        _loginResolver,
-        _launcherResolver,
-        _notFoundResolver,
-        _popupResolver,
-      ];
+  List<MicroApp> get microApps => <MicroApp>[
+    _erpResolver,
+    _loginResolver,
+    _launcherResolver,
+    _notFoundResolver,
+    _popupResolver,
+  ];
 }
 
 class _ContentWrapperState extends State<ContentWrapper> {
-
   @override
   void initState() {
     super.initState();
 
     CustomEventBus.on<LoginModuleUserLoggedOutEvent>((event) async {
+      await sl<StorageService>().removeToken();
       await navigatorKey.currentState?.pushReplacementNamed(
         Routes.loginApp.value,
       );
@@ -71,17 +68,41 @@ class _ContentWrapperState extends State<ContentWrapper> {
     CustomEventBus.on<ErpShownEvent>((event) async {
       final resources = await sl<StorageService>().loadLoginSessionModel();
       await navigatorKey.currentState?.pushNamed(
-          Routes.erpApp.value, arguments: resources);
+        Routes.erpApp.value,
+        arguments: resources,
+      );
     });
 
     CustomEventBus.on<ShowPopupEvent>((event) async {
-        loginBlocOnError(context, 'error', event.message);
+      loginBlocOnError(context, 'error', event.message);
     });
+
+    checkToken();
+  }
+
+  Future<bool> checkToken() async {
+    var token;
+    try {
+      final storageService = sl<StorageService>();
+      token = await storageService.loadToken();
+      if (token == null || token == '') {
+        final devToken =await storageService.loadDeviceToken();
+        navigatorKey.currentState?.pushNamed(
+          Routes.loginApp.value,
+          arguments: <String, dynamic>{
+            'DeviceToken': devToken,
+          },
+        );
+      }
+    } catch (e) {}
+    if (token == null) {
+      return false;
+    } else
+      return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    // use the BaseApp's generateRoute so it uses the microApps registered above
     return Navigator(
       key: navigatorKey,
       onGenerateRoute: widget.generateRoute,
@@ -90,8 +111,11 @@ class _ContentWrapperState extends State<ContentWrapper> {
   }
 }
 
-void loginBlocOnError(BuildContext context, String? title,
-    String? description) {
+void loginBlocOnError(
+  BuildContext context,
+  String? title,
+  String? description,
+) {
   ModernToast().showToast(
     context,
     Text(title ?? 'خطا'),
