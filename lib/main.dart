@@ -18,6 +18,7 @@ import 'package:micro_app_core/index.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:resources_package/Resources/Theme/theme_manager.dart' as res;
+import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
 
@@ -32,6 +33,9 @@ void main() async {
     await Future.wait(<Future<void>>[
       InjectionContainer.init(),
       res.AppTheme.init(),
+      sl<StorageService>().loadLanguage().then(
+        (lang) => res.AppTheme(localMode: lang.locale),
+      ),
     ]);
     sl.registerSingleton<ErpResolver>(ErpResolver());
     sl.registerSingleton<ErpFormGeneratorResolver>(ErpFormGeneratorResolver());
@@ -54,11 +58,9 @@ void main() async {
     );
 
     String? token = await FirebaseMessaging.instance.getToken();
-    if(token != null){
+    if (token != null) {
       await sl<StorageService>().saveDeviceToken(token);
     }
-
-
   } catch (e, stackTrace) {
     debugPrintStack(stackTrace: stackTrace);
   }
@@ -106,22 +108,35 @@ class AppView extends StatefulWidget {
 
 class _AppViewScreenState extends State<AppView> {
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //
+    // final lang = sl<StorageService>().loadLanguage().then(
+    //   (lang) => {
+    //     if (lang.locale.languageCode != res.AppTheme.local.value.languageCode)
+    //       {res.AppTheme(localMode: lang.locale)},
+    //   },
+    // );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final AppNotifier notifier = sl<AppNotifier>();
-    final res.AppTheme themeConfig = context.select(
-      (AppNotifier n) => n.themeConfig,
+    final Locale loc = context.select(
+      (AppNotifier n) => n.currentLocal(),
     );
 
     return MaterialApp(
       home: ContentWrapper(notifier: notifier),
       showSemanticsDebugger: false,
-      title: 'Khatoon Container',
+      title: 'erp',
       debugShowCheckedModeBanner: false,
-      color: Colors.white,
       // Localization
-      supportedLocales: const [Locale('fa'), Locale('en')],
-      locale: themeConfig.localMode,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: loc,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -136,9 +151,9 @@ class _AppViewScreenState extends State<AppView> {
             );
           },
 
-      themeMode: res.AppTheme().themeMode,
-      theme: _buildTheme(themeConfig.primaryColor, Brightness.light),
-      darkTheme: _buildTheme(themeConfig.primaryColor, Brightness.dark),
+      themeMode: res.AppTheme.mode.value,
+      theme: _buildTheme(res.AppColorsManager().primary, Brightness.light),
+      darkTheme: _buildTheme(res.AppColorsManager().primary, Brightness.dark),
     );
   }
 }
