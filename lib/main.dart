@@ -9,7 +9,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_module/micro_app/login_module_resolver.dart';
 import 'package:micro_app_commons/app_notifier.dart';
-
 import 'package:flutter/material.dart';
 import 'package:micro_app_commons/features/launcher/presentation/bloc/base_bloc/launcher_resolver.dart';
 import 'package:micro_app_commons/features/not_found/presentation/bloc/base_bloc/not_found_resolver.dart';
@@ -21,7 +20,6 @@ import 'package:resources_package/Resources/Theme/theme_manager.dart' as res;
 import 'package:resources_package/l10n/app_localizations.dart';
 import 'package:services_package/com/person/person_service.dart';
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
-
 import 'content_wrapper.dart';
 import 'micro_base_app/bloc/base_bloc/main_resolver.dart';
 
@@ -37,8 +35,10 @@ void main() async {
         (lang) => res.AppTheme(localMode: lang.locale),
       ),
     ]);
-    sl.registerSingleton<ErpResolver>(ErpResolver());
-    sl.registerSingleton<ErpFormGeneratorResolver>(ErpFormGeneratorResolver());
+    sl.registerSingleton<ErpResolver>(ErpResolver(() => ''));
+    sl.registerSingleton<ErpFormGeneratorResolver>(
+      ErpFormGeneratorResolver(route: 'fore'),
+    );
     sl.registerSingleton<LauncherResolver>(LauncherResolver());
     sl.registerSingleton<LoginModuleResolver>(LoginModuleResolver());
     sl.registerSingleton<NotFoundResolver>(NotFoundResolver());
@@ -108,24 +108,9 @@ class AppView extends StatefulWidget {
 
 class _AppViewScreenState extends State<AppView> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    //
-    // final lang = sl<StorageService>().loadLanguage().then(
-    //   (lang) => {
-    //     if (lang.locale.languageCode != res.AppTheme.local.value.languageCode)
-    //       {res.AppTheme(localMode: lang.locale)},
-    //   },
-    // );
-  }
-
-  @override
   Widget build(BuildContext context) {
     final AppNotifier notifier = sl<AppNotifier>();
-    final Locale loc = context.select(
-      (AppNotifier n) => n.currentLocal(),
-    );
+    final Locale loc = context.select((AppNotifier n) => n.currentLocal());
 
     return MaterialApp(
       home: ContentWrapper(notifier: notifier),
@@ -158,27 +143,7 @@ class _AppViewScreenState extends State<AppView> {
   }
 }
 
-void registerMicroApps() {
-  // ۱. MicroAppNotifier
-  sl.registerLazySingleton<
-    MicroAppNotifier<ContainerCoreModel, ContainerAppsCoreEnum>
-  >(
-    () => MicroAppNotifier<ContainerCoreModel, ContainerAppsCoreEnum>(
-      ContainerCoreModel(),
-    ),
-  );
 
-  // ۲. Resolver
-  sl.registerLazySingleton<ErpResolver>(() => ErpResolver());
-
-  // مشابه برای Login
-  sl.registerLazySingleton<LoginModuleResolver>(() => LoginModuleResolver());
-
-  // و برای دیگر میکرو اپ‌ها
-  sl.registerLazySingleton<LauncherResolver>(() => LauncherResolver());
-  sl.registerLazySingleton<NotFoundResolver>(() => NotFoundResolver());
-  sl.registerLazySingleton<PopupResolver>(() => PopupResolver());
-}
 
 ThemeData _buildTheme(Color seedColor, Brightness brightness) {
   final bool isDark = brightness == Brightness.dark;

@@ -73,9 +73,9 @@ class _ContentWrapperState extends State<ContentWrapper> {
       );
     });
 
-    CustomEventBus.on<ShowPopupEvent>((event) async {
-      loginBlocOnError(context, 'error', event.message);
-    });
+    // CustomEventBus.on<ShowPopupEvent>((event) async {
+    //   loginBlocOnError(context, 'error', event.message);
+    // });
 
     checkToken();
   }
@@ -97,8 +97,9 @@ class _ContentWrapperState extends State<ContentWrapper> {
     } catch (e) {}
     if (token == null) {
       return false;
-    } else
+    } else {
       return true;
+    }
   }
 
   @override

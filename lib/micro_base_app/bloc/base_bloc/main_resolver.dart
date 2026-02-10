@@ -85,27 +85,5 @@ class MainResolver extends MicroApp<ContainerCoreModel, ContainerAppsCoreEnum> {
 
   ContainerCoreModel get initData => throw UnimplementedError();
 
-  //
-  // @override
-  // void registerDependencies() {
-  //   // ۱. ثبت وابستگی‌های عمومی میکرواپ ERP در سرویس لوکیتور
-  //   sl.registerFactory(
-  //     () => AppNotifier(map: () => AppsConstants$DynamicPageBuilder().getMap),
-  //   );
-  //
-  //   // ۲. ثبت فانکشن‌های دریافتی از کانتینر، در دسترس برای کل میکرواپ
-  //   _callbacks.forEach((key, callback) {
-  //     sl.registerFactoryParam<Function, void, void>(
-  //       (_, __) => callback,
-  //       instanceName: key.toString(),
-  //     );
-  //   });
-  //
-  //   // ۳. ثبت فکتوری برای استور Redux (نسخه بهبودیافته متد getStore شما)
-  //   // sl.registerFactoryParam<Store, BaseRequest Function(), BaseResponse Function(Map)>(
-  //   // (requestFactory, fromJsonD) => _createStore(requestFactory, fromJsonD),
-  //   // );
-  // }
-
   void setCoreData(ContainerCoreModel initDt) {}
 }
