@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:micro_app_commons/features/launcher/presentation/bloc/base_bloc/launcher_resolver.dart';
 import 'package:micro_app_commons/features/not_found/presentation/bloc/base_bloc/not_found_resolver.dart';
 import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/popup_resolver.dart';
-import 'package:micro_app_core/index.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:resources_package/Resources/Theme/theme_manager.dart' as res;
