@@ -5,7 +5,6 @@ import 'package:login_module/micro_app/login_module_resolver.dart';
 import 'package:micro_app_commons/app_notifier.dart';
 import 'package:micro_app_commons/features/launcher/presentation/bloc/base_bloc/launcher_resolver.dart';
 import 'package:micro_app_commons/features/not_found/presentation/bloc/base_bloc/not_found_resolver.dart';
-import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/popup_events.dart';
 import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/popup_resolver.dart';
 import 'package:micro_app_core/index.dart';
 import 'package:micro_app_core/services/routing/routes.dart';
@@ -73,9 +72,9 @@ class _ContentWrapperState extends State<ContentWrapper> {
       );
     });
 
-    CustomEventBus.on<ShowPopupEvent>((event) async {
-      loginBlocOnError(context, 'error', event.message);
-    });
+    // CustomEventBus.on<ShowPopupEvent>((event) async {
+    //   loginBlocOnError(context, 'error', event.message);
+    // });
 
     checkToken();
   }
@@ -97,8 +96,9 @@ class _ContentWrapperState extends State<ContentWrapper> {
     } catch (e) {}
     if (token == null) {
       return false;
-    } else
+    } else {
       return true;
+    }
   }
 
   @override
