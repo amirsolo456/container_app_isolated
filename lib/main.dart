@@ -104,43 +104,80 @@ class AppView extends StatefulWidget {
   @override
   State<AppView> createState() => _AppViewScreenState();
 }
-
 class _AppViewScreenState extends State<AppView> {
   @override
   Widget build(BuildContext context) {
-    final AppNotifier notifier = sl<AppNotifier>();
-    final Locale loc = context.select((AppNotifier n) => n.currentLocal());
+    return Consumer<AppNotifier>(
+      builder: (context, notifier, child) {
+        final Locale loc = notifier.currentLocal();
 
-    return MaterialApp(
-      home: ContentWrapper(notifier: notifier),
-      showSemanticsDebugger: false,
-      title: 'erp',
-      debugShowCheckedModeBanner: false,
-      // Localization
-      supportedLocales: AppLocalizations.supportedLocales,
-      locale: loc,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      localeResolutionCallback:
-          (Locale? locale, Iterable<Locale> supportedLocales) {
+        return MaterialApp(
+          key: ValueKey<Locale>(loc),  // همچنان نگه دارید
+          locale: loc,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
             if (locale == null) return supportedLocales.first;
             return supportedLocales.firstWhere(
-              (Locale supported) =>
-                  supported.languageCode == locale.languageCode,
+                  (supported) => supported.languageCode == locale.languageCode,
               orElse: () => supportedLocales.first,
             );
           },
-
-      themeMode: res.AppTheme.mode.value,
-      theme: _buildTheme(res.AppColorsManager().primary, Brightness.light),
-      darkTheme: _buildTheme(res.AppColorsManager().primary, Brightness.dark),
+          themeMode: res.AppTheme.mode.value,
+          theme: _buildTheme(res.AppColorsManager().primary, Brightness.light),
+          darkTheme: _buildTheme(res.AppColorsManager().primary, Brightness.dark),
+          home: ContentWrapper(notifier: notifier),
+          debugShowCheckedModeBanner: false,
+          title: 'erp',
+          showSemanticsDebugger: false,
+        );
+      },
     );
   }
 }
+// class _AppViewScreenState extends State<AppView> {
+//   @override
+//   Widget build(BuildContext context) {
+//     final AppNotifier notifier = sl<AppNotifier>();
+//     final Locale loc = context.select((AppNotifier n) => n.currentLocal() );
+//
+//     return MaterialApp(
+//       key: ValueKey<Locale>(loc),
+//       home: ContentWrapper(notifier: notifier),
+//       showSemanticsDebugger: false,
+//       title: 'erp',
+//       debugShowCheckedModeBanner: false,
+//       supportedLocales: AppLocalizations.supportedLocales,
+//       locale: loc,
+//       localizationsDelegates: const [
+//         AppLocalizations.delegate,
+//         GlobalMaterialLocalizations.delegate,
+//         GlobalWidgetsLocalizations.delegate,
+//         GlobalCupertinoLocalizations.delegate,
+//       ],
+//       localeResolutionCallback:
+//           (Locale? locale, Iterable<Locale> supportedLocales) {
+//             if (locale == null) return supportedLocales.first;
+//             return supportedLocales.firstWhere(
+//               (Locale supported) =>
+//                   supported.languageCode == locale.languageCode,
+//               orElse: () => supportedLocales.first,
+//             );
+//           },
+//
+//       themeMode: res.AppTheme.mode.value,
+//       theme: _buildTheme(res.AppColorsManager().primary, Brightness.light),
+//       darkTheme: _buildTheme(res.AppColorsManager().primary, Brightness.dark),
+//     );
+//   }
+// }
+
+
 
 
 

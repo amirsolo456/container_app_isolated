@@ -80,11 +80,11 @@ class _ContentWrapperState extends State<ContentWrapper> {
   }
 
   Future<bool> checkToken() async {
-    var token;
+    String token;
     try {
       final storageService = sl<StorageService>();
       token = await storageService.loadToken();
-      if (token == null || token == '') {
+      if (token == '') {
         final devToken =await storageService.loadDeviceToken();
         navigatorKey.currentState?.pushNamed(
           Routes.loginApp.value,
@@ -94,12 +94,8 @@ class _ContentWrapperState extends State<ContentWrapper> {
         );
       }
     } catch (e) {}
-    if (token == null) {
-      return false;
-    } else {
-      return true;
+    return true;
     }
-  }
 
   @override
   Widget build(BuildContext context) {
