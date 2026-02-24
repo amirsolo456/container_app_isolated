@@ -9,8 +9,6 @@ import 'package:micro_app_commons/features/popup/presentation/bloc/base_bloc/pop
 import 'package:micro_app_core/index.dart';
 import 'package:micro_app_core/services/routing/routes.dart';
 import 'package:services_package/storage/domain/usecases/storage_service.dart';
-import 'package:toastification/toastification.dart';
-import 'package:ui_components_package/index.dart';
 
 typedef WidgetBuilderArgs = Widget Function(BuildContext context, Object? args);
 
@@ -45,12 +43,24 @@ class ContentWrapper extends StatefulWidget with BaseApp {
 }
 
 class _ContentWrapperState extends State<ContentWrapper> {
+  // use the navigatorKey provided by BaseApp (from.micro_core_utils)
+  // make sure this key is unique in whole app (don't create other navigators with same key)
+  // final GlobalKey<NavigatorState> _localNavigatorKey =
+  //     GlobalKey<NavigatorState>(debugLabel: 'contentWrapperNavigator');
+
+  // keep subscriptions to cancel on dispose
+  // late final StreamSubscription<ShowPopupEvent> _popupSub;
+  // late final StreamSubscription<ErpCloseEvent> _erpCloseSub;
+  // late final StreamSubscription<LoginModuleUserLoggedOutEvent> _logoutSub;
+  // late final StreamSubscription<LoginModuleUserLoggedInEvent> _loginInSub;
+  // late final StreamSubscription<PageNotFoundEvent> _pageNotFoundSub;
+  // late final StreamSubscription<ErpShownEvent> _erpShownSub;
+
   @override
   void initState() {
     super.initState();
 
     CustomEventBus.on<LoginModuleUserLoggedOutEvent>((event) async {
-      await sl<StorageService>().removeToken();
       await navigatorKey.currentState?.pushReplacementNamed(
         Routes.loginApp.value,
       );
@@ -65,61 +75,29 @@ class _ContentWrapperState extends State<ContentWrapper> {
     });
 
     CustomEventBus.on<ErpShownEvent>((event) async {
-      final resources = await sl<StorageService>().loadLoginSessionModel();
-      await navigatorKey.currentState?.pushNamed(
-        Routes.erpApp.value,
-        arguments: resources,
-      );
+      // prefer navigatorKey (BaseApp) to keep routes centralized
+      await navigatorKey.currentState?.pushNamed(Routes.erpApp.value);
     });
-
-    // CustomEventBus.on<ShowPopupEvent>((event) async {
-    //   loginBlocOnError(context, 'error', event.message);
-    // });
-
-    checkToken();
   }
 
-  Future<bool> checkToken() async {
-    var token;
-    try {
-      final storageService = sl<StorageService>();
-      token = await storageService.loadToken();
-      if (token == null || token == '') {
-        final devToken =await storageService.loadDeviceToken();
-        navigatorKey.currentState?.pushNamed(
-          Routes.loginApp.value,
-          arguments: <String, dynamic>{
-            'DeviceToken': devToken,
-          },
-        );
-      }
-    } catch (e) {}
-    if (token == null) {
-      return false;
-    } else {
-      return true;
-    }
-  }
+  // @override
+  // void dispose() {
+  //   _popupSub.cancel();
+  //   _erpCloseSub.cancel();
+  //   _logoutSub.cancel();
+  //   _loginInSub.cancel();
+  //   _pageNotFoundSub.cancel();
+  //   _erpShownSub.cancel();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // use the BaseApp's generateRoute so it uses the microApps registered above
     return Navigator(
       key: navigatorKey,
       onGenerateRoute: widget.generateRoute,
       initialRoute: Routes.launcherPage.value,
     );
   }
-}
-
-void loginBlocOnError(
-  BuildContext context,
-  String? title,
-  String? description,
-) {
-  ModernToast().showToast(
-    context,
-    Text(title ?? 'خطا'),
-    Text(description ?? 'مشکلی رخ داده'),
-    ToastificationType.warning,
-  );
 }
